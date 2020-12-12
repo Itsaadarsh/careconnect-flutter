@@ -18,8 +18,7 @@ const morgan_1 = __importDefault(require("morgan"));
 const body_parser_1 = __importDefault(require("body-parser"));
 const mongoose_1 = __importDefault(require("mongoose"));
 const socket_io_1 = __importDefault(require("socket.io"));
-const vitals_1 = __importDefault(require("./models/vitals"));
-const path_1 = __importDefault(require("path"));
+require('dotenv').config();
 const app = express_1.default();
 const httpserver = require('http').createServer(app);
 const PORT = process.env.PORT || 4000;
@@ -36,18 +35,6 @@ app.use((req, res, next) => {
     next();
     return;
 });
-if (process.env.NODE_ENV === 'production') {
-    app.use(express_1.default.static('client/build'));
-    app.get('/', (_, res) => {
-        res.sendFile(path_1.default.resolve(__dirname, '../client', 'build', 'index.html'));
-    });
-    app.get('/signup', (_, res) => {
-        res.sendFile(path_1.default.resolve(__dirname, '../client', 'build', 'index.html'));
-    });
-    app.get('/login', (_, res) => {
-        res.sendFile(path_1.default.resolve(__dirname, '../client', 'build', 'index.html'));
-    });
-}
 const io = socket_io_1.default(httpserver);
 const userSocket = io.of('/');
 userSocket.on('connection', (socket) => {
@@ -55,8 +42,7 @@ userSocket.on('connection', (socket) => {
     sendData(socket);
 });
 const sendData = (socket) => __awaiter(void 0, void 0, void 0, function* () {
-    const rand = (yield Math.floor(Math.random() * (1900 - 10))) + 10;
-    const vitals = yield vitals_1.default.find().skip(rand).limit(10);
+    const vitals = 1;
     socket.emit('data', vitals);
     setTimeout(() => {
         sendData(socket);
@@ -72,7 +58,7 @@ app.use((_req, res, _next) => {
     });
 });
 httpserver.listen(PORT, () => __awaiter(void 0, void 0, void 0, function* () {
-    yield mongoose_1.default.connect(`mongodb+srv://aadi:rootadmin@cluster0.b7dxw.mongodb.net/careconnect?retryWrites=true&w=majority`, { useUnifiedTopology: true, useNewUrlParser: true });
+    yield mongoose_1.default.connect(`mongodb+srv://aadi:${process.env.MONGO_PWD}@cluster0.b7dxw.mongodb.net/careconnect?retryWrites=true&w=majority`, { useUnifiedTopology: true, useNewUrlParser: true });
     console.log('Connected to Database');
     console.log(`Listening at PORT ${PORT}`);
 }));

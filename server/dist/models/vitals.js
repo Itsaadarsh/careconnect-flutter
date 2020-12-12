@@ -6,10 +6,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const mongoose_1 = __importDefault(require("mongoose"));
 const vitalSchema = new mongoose_1.default.Schema({
     _id: mongoose_1.default.Schema.Types.ObjectId,
-    Heart_rate: mongoose_1.default.Schema.Types.Number,
-    temp: mongoose_1.default.Schema.Types.Number,
-    systolic_bp: mongoose_1.default.Schema.Types.Number,
-    diastoli_bp: mongoose_1.default.Schema.Types.Number,
+    index: mongoose_1.default.Schema.Types.String,
+    source: mongoose_1.default.Schema.Types.String,
+    timestamp: mongoose_1.default.Schema.Types.String,
+    values: mongoose_1.default.Schema.Types.String,
 });
 const vitalModel = mongoose_1.default.model('VitalModel', vitalSchema, 'vital_data');
 exports.default = module.exports = vitalModel;
