@@ -14,15 +14,16 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const user_1 = __importDefault(require("./routes/user"));
+const morgan_1 = __importDefault(require("morgan"));
 const body_parser_1 = __importDefault(require("body-parser"));
 const mongoose_1 = __importDefault(require("mongoose"));
 const socket_io_1 = __importDefault(require("socket.io"));
 const vitals_1 = __importDefault(require("./models/vitals"));
 const path_1 = __importDefault(require("path"));
-require('dotenv').config();
 const app = express_1.default();
 const httpserver = require('http').createServer(app);
 const PORT = process.env.PORT || 4000;
+app.use(morgan_1.default('dev'));
 app.use(body_parser_1.default.urlencoded({ extended: false }));
 app.use(body_parser_1.default.json());
 app.use((req, res, next) => {
@@ -71,8 +72,7 @@ app.use((_req, res, _next) => {
     });
 });
 httpserver.listen(PORT, () => __awaiter(void 0, void 0, void 0, function* () {
-    yield mongoose_1.default.connect(process.env.MONGO_URI ||
-        `mongodb+srv://aadi:${process.env.MONGO_PWD}@cluster0.b7dxw.mongodb.net/careconnect?retryWrites=true&w=majority`, { useUnifiedTopology: true, useNewUrlParser: true });
+    yield mongoose_1.default.connect(`mongodb+srv://aadi:rootadmin@cluster0.b7dxw.mongodb.net/careconnect?retryWrites=true&w=majority`, { useUnifiedTopology: true, useNewUrlParser: true });
     console.log('Connected to Database');
     console.log(`Listening at PORT ${PORT}`);
 }));

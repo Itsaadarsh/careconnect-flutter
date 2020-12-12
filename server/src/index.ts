@@ -1,11 +1,11 @@
 import express from 'express';
 import userRouter from './routes/user';
+import morgan from 'morgan';
 import bodyParser from 'body-parser';
 import mongoose from 'mongoose';
 import socketio, { Socket } from 'socket.io';
 import vitalModel from './models/vitals';
 import path from 'path';
-require('dotenv').config();
 
 const app = express();
 const httpserver = require('http').createServer(app);
@@ -21,6 +21,7 @@ declare global {
   }
 }
 
+app.use(morgan('dev'));
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
@@ -85,8 +86,7 @@ app.use((_req, res, _next) => {
 // Listening to PORT and Connecting to Data Base
 httpserver.listen(PORT, async () => {
   await mongoose.connect(
-    process.env.MONGO_URI ||
-      `mongodb+srv://aadi:${process.env.MONGO_PWD}@cluster0.b7dxw.mongodb.net/careconnect?retryWrites=true&w=majority`,
+    `mongodb+srv://aadi:rootadmin@cluster0.b7dxw.mongodb.net/careconnect?retryWrites=true&w=majority`,
     { useUnifiedTopology: true, useNewUrlParser: true }
   );
   console.log('Connected to Database');
