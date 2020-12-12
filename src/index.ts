@@ -46,7 +46,7 @@ userSocket.on('connection', (socket: Socket) => {
 });
 
 const sendData = async (socket: Socket) => {
-  const rand = (await Math.floor(Math.random() * (1900 - 10))) + 10;
+  const rand = (await Math.floor(Math.random() * (200471 - 10))) + 10;
   const vitals = await vitalModel.find().skip(rand).limit(10);
   socket.emit('data', vitals);
   setTimeout(() => {

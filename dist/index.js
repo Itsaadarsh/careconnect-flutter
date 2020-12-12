@@ -18,6 +18,7 @@ const morgan_1 = __importDefault(require("morgan"));
 const body_parser_1 = __importDefault(require("body-parser"));
 const mongoose_1 = __importDefault(require("mongoose"));
 const socket_io_1 = __importDefault(require("socket.io"));
+const vitals_1 = __importDefault(require("./models/vitals"));
 require('dotenv').config();
 const app = express_1.default();
 const httpserver = require('http').createServer(app);
@@ -42,7 +43,8 @@ userSocket.on('connection', (socket) => {
     sendData(socket);
 });
 const sendData = (socket) => __awaiter(void 0, void 0, void 0, function* () {
-    const vitals = 1;
+    const rand = (yield Math.floor(Math.random() * (1900 - 10))) + 10;
+    const vitals = yield vitals_1.default.find().skip(rand).limit(10);
     socket.emit('data', vitals);
     setTimeout(() => {
         sendData(socket);
