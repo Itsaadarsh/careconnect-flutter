@@ -1,11 +1,11 @@
 import express from 'express';
 import userRouter from './routes/user';
-import morgan from 'morgan';
 import bodyParser from 'body-parser';
 import mongoose from 'mongoose';
 import socketio, { Socket } from 'socket.io';
 import vitalModel from './models/vitals';
 import path from 'path';
+require('dotenv').config();
 
 const app = express();
 const httpserver = require('http').createServer(app);
@@ -21,7 +21,6 @@ declare global {
   }
 }
 
-app.use(morgan('dev'));
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
