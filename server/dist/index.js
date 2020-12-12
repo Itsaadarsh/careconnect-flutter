@@ -22,7 +22,7 @@ const path_1 = __importDefault(require("path"));
 require('dotenv').config();
 const app = express_1.default();
 const httpserver = require('http').createServer(app);
-const PORT = process.env.PORT || 8080;
+const PORT = process.env.PORT || 4000;
 app.use(body_parser_1.default.urlencoded({ extended: false }));
 app.use(body_parser_1.default.json());
 app.use((req, res, next) => {
