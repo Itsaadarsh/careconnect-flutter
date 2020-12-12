@@ -10,7 +10,7 @@ require('dotenv').config();
 const app = express();
 const httpserver = require('http').createServer(app);
 
-const PORT = process.env.PORT || 8080;
+const PORT = process.env.PORT || 4000;
 
 // Adding user globally to express.Request
 declare global {
