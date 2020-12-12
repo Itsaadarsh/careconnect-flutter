@@ -1,12 +1,13 @@
-import mongoose from 'mongoose';
-import express from 'express';
-import userModel from '../models/users';
-import bcrypt from 'bcrypt';
-import jwt from 'jsonwebtoken';
-import auth from '../auth/auth';
+import mongoose from "mongoose";
+import express from "express";
+import userModel from "../models/users";
+import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
+import auth from "../auth/auth";
+import vitalModel from "./../models/vitals";
 const router = express.Router();
 
-router.post('/signup', async (req, res) => {
+router.post("/signup", async (req, res) => {
   const user = await userModel.find({ email: req.body.signupEmail });
   if (user.length == 0) {
     bcrypt.hash(req.body.signupPassword, 10, async (err, hash) => {
@@ -20,14 +21,19 @@ router.post('/signup', async (req, res) => {
             height: req.body.height,
             phoneNum: req.body.phoneNum,
             email: req.body.signupEmail,
-            password: hash
+            password: hash,
           });
           const createdUser = await user.save();
-          const token: string = await jwt.sign({ email: createdUser.email, userid: createdUser._id }, process.env.JWT_TOKEN!, {
-            expiresIn: '24h',
-          });
+          const token: string = await jwt.sign(
+            { email: createdUser.email, userid: createdUser._id },
+            process.env.JWT_TOKEN!,
+            {
+              expiresIn: "24h",
+            }
+          );
           res.status(201).json({
-            error: null, data: {
+            error: null,
+            data: {
               userData: {
                 _id: createdUser._id,
                 name: createdUser.name,
@@ -36,8 +42,9 @@ router.post('/signup', async (req, res) => {
                 height: createdUser.height,
                 phoneNum: createdUser.phoneNum,
                 email: createdUser.email,
-              }, token: token
-            }
+              },
+              token: token,
+            },
           });
         } else {
           res.status(500).json({ error: "Something went wrong.", data: null });
@@ -51,12 +58,14 @@ router.post('/signup', async (req, res) => {
   }
 });
 
-router.get('/user', auth, async (req, res) => {
+router.get("/user", auth, async (req, res) => {
   const user = await userModel.findOne({ email: req.user.email });
-  if (user === null) res.status(404).json({ error: "User not found.", data: null });
+  if (user === null)
+    res.status(404).json({ error: "User not found.", data: null });
   else {
     res.status(201).json({
-      error: null, data: {
+      error: null,
+      data: {
         userData: {
           _id: user._id,
           name: user.name,
@@ -65,27 +74,32 @@ router.get('/user', auth, async (req, res) => {
           height: user.height,
           phoneNum: user.phoneNum,
           email: user.email,
-        }
-      }
+        },
+      },
     });
   }
 });
 
-
-router.post('/login', async (req, res) => {
+router.post("/login", async (req, res) => {
   try {
     const user = await userModel.findOne({ email: req.body.loginEmail });
-    if (user === null) res.status(404).json({ error: `User not found.`, data: null });
+    if (user === null)
+      res.status(404).json({ error: `User not found.`, data: null });
     else {
       bcrypt.compare(req.body.loginPassword, user.password, (err, pass) => {
         if (err || pass == false) {
           res.status(404).json({ error: "Incorrect password.", data: null });
         } else {
-          const token: string = jwt.sign({ email: user.email, userid: user._id }, process.env.JWT_TOKEN!, {
-            expiresIn: '72h',
-          });
+          const token: string = jwt.sign(
+            { email: user.email, userid: user._id },
+            process.env.JWT_TOKEN!,
+            {
+              expiresIn: "72h",
+            }
+          );
           res.status(201).json({
-            error: null, data: {
+            error: null,
+            data: {
               userData: {
                 _id: user._id,
                 name: user.name,
@@ -94,8 +108,9 @@ router.post('/login', async (req, res) => {
                 height: user.height,
                 phoneNum: user.phoneNum,
                 email: user.email,
-              }, token: token
-            }
+              },
+              token: token,
+            },
           });
         }
       });
@@ -105,19 +120,37 @@ router.post('/login', async (req, res) => {
   }
 });
 
-router.patch('/editprofile/:userid', auth, async (req, res) => {
+router.patch("/editprofile/:userid", auth, async (req, res) => {
   try {
     const updatedUser: any = {};
     for (let item of req.body) {
       updatedUser[item.method] = item.value;
     }
-    const updatedValue = await userModel.updateOne({ _id: req.params.userid }, { $set: updatedUser });
-    if (updatedValue.n === 1) res.status(201).json({ error: null, data: { userData: updatedValue } });
-    else res.status(500).json({ error: 'Something went wrong.', data: null });
+    const updatedValue = await userModel.updateOne(
+      { _id: req.params.userid },
+      { $set: updatedUser }
+    );
+    if (updatedValue.n === 1)
+      res.status(201).json({ error: null, data: { userData: updatedValue } });
+    else res.status(500).json({ error: "Something went wrong.", data: null });
   } catch (err) {
     res.status(500).json({ error: err.message, data: null });
   }
 });
 
+router.get("/data", auth, async (_, res) => {
+  const rand = (await Math.floor(Math.random() * (200471 - 10))) + 10;
+  const vitals = await vitalModel.find().skip(rand).limit(1);
+  if (vitals === null)
+    res.status(404).json({ error: "Vital not found.", data: null });
+  else {
+    res.status(201).json({
+      error: null,
+      data: {
+        vital: vitals[0],
+      },
+    });
+  }
+});
 
 export default module.exports = router;

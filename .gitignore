@@ -101,3 +101,5 @@ images/
 
 # TernJS port file
 .tern-port
+
+dist
